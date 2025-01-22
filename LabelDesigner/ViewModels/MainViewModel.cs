@@ -177,6 +177,8 @@ namespace LabelDesigner.ViewModels
         /// (Pro ukázku viz předchozí příklad.)
         /// </summary>
         /// 
+        /// 
+        /// 
         public IRelayCommand MinimizeCommand { get; }
         public IRelayCommand MaximizeRestoreCommand { get; }
         public IRelayCommand CloseCommand { get; }
