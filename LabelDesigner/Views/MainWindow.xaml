@@ -1,0 +1,290 @@
+﻿<Window x:Class="LabelDesigner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:LabelDesigner.ViewModels"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:LabelDesigner.Helpers"
+        Title="SFC Designer" Height="600" Width="800" WindowState="Maximized" Icon="/Views/logo1.png"
+        WindowStyle="None" AllowsTransparency="True" Background="#FF8D8D8D">
+
+    <!-- ViewModel jako DataContext -->
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <!-- DataTemplate pro skupiny objektů (ElementGroup) -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:ElementGroup}" ItemsSource="{Binding Items}">
+            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+        </HierarchicalDataTemplate>
+    </Window.Resources>
+    <Window.Effect>
+        <DropShadowEffect/>
+    </Window.Effect>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <!-- Hlavní Grid -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Horní lišta -->
+            <RowDefinition Height="50" />
+            <!-- Menu -->
+            <RowDefinition Height="40" />
+            <!-- Obsah aplikace -->
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Horní lišta -->
+        <Border Grid.Row="0" Background="#303030">
+            <!-- Chování (Behavior) pro volání DragMoveCommand při MouseLeftButtonDown -->
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonDown">
+                    <i:InvokeCommandAction Command="{Binding DragMoveCommand}" PassEventArgsToCommand="True" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+
+            <!-- Vlastní obsah horní lišty -->
+            <DockPanel VerticalAlignment="Center">
+                <!-- Ikona aplikace -->
+                <Image Source="/Views/logo1.png" 
+               Width="37" Height="37" 
+               Margin="10,0,10,0" 
+               VerticalAlignment="Center" />
+
+                <!-- Název aplikace -->
+                <TextBlock Text="SFC Designer" 
+                   FontSize="20" 
+                   FontWeight="Bold" 
+                   Foreground="White" 
+                   VerticalAlignment="Center" />
+
+                <!-- Tlačítka pro ovládání okna -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                    <Button Width="40" Height="30"
+                    Background="Transparent" Foreground="White" BorderBrush="Transparent"
+                    Command="{Binding MinimizeCommand}">
+                        <TextBlock Text="-" FontSize="18"
+                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Button>
+
+                    <Button Width="40" Height="30"
+                    Background="Transparent" Foreground="White" BorderBrush="Transparent"
+                    Command="{Binding MaximizeRestoreCommand}">
+                        <TextBlock Text="□" FontSize="18"
+                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Button>
+
+                    <Button Width="40" Height="30"
+                    Background="Transparent" Foreground="White" BorderBrush="Transparent"
+                    Command="{Binding CloseCommand}">
+                        <TextBlock Text="x" FontSize="18"
+                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Menu -->
+        <Border Grid.Row="1" Background="#404040" Margin="10,0,0,0">
+            <Menu DockPanel.Dock="Top" Background="#404040" Foreground="White">
+                <Menu.Resources>
+                    <!-- Styl pro MenuItem -->
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Padding" Value="10" />
+                        <Setter Property="FontSize" Value="14" />
+                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                    </Style>
+                </Menu.Resources>
+                <MenuItem Header="Soubor">
+                    <MenuItem Header="Nový" Command="{Binding NewDocumentCommand}" />
+                    <MenuItem Header="Uložit" Command="{Binding SaveLayoutCommand}" />
+                    <MenuItem Header="Otevřít" Command="{Binding LoadLayoutCommand}" />
+                </MenuItem>
+                <MenuItem Header="Přidat">
+                    <MenuItem Header="Přidat text" Command="{Binding AddTextCommand}" />
+                    <MenuItem Header="Přidat obrázek" Command="{Binding AddImageCommand}" />
+                </MenuItem>
+            </Menu>
+        </Border>
+
+        <!-- Horní menu -->
+        <Grid Grid.Row="1" Background="#FF8D8D8D" Margin="10,0,0,0">
+            <Menu DockPanel.Dock="Top" Background="#FF8D8D8D">
+                <Menu.Resources>
+                    <!-- Styl pro MenuItem -->
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Padding" Value="10" />
+                        <Setter Property="FontSize" Value="14" />
+                        <Setter Property="Background" Value="#FF8D8D8D" />
+                        <Setter Property="BorderThickness" Value="0" />
+                    </Style>
+                </Menu.Resources>
+                <MenuItem Header="Soubor">
+                    <MenuItem Header="Nový" Command="{Binding NewDocumentCommand}" />
+                    <MenuItem Header="Uložit" Command="{Binding SaveLayoutCommand}" />
+                    <MenuItem Header="Otevřít" Command="{Binding LoadLayoutCommand}" />
+                </MenuItem>
+                <MenuItem Header="Přidat">
+                    <MenuItem Header="Přidat text" Command="{Binding AddTextCommand}" />
+                    <MenuItem Header="Přidat obrázek" Command="{Binding AddImageCommand}" />
+                </MenuItem>
+            </Menu>
+        </Grid>
+
+
+
+        <!-- Hlavní oblast s Canvasem vlevo a TreeView + Properties panelem vpravo -->
+        <Grid Grid.Row="2" Margin="10,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Canvas vlevo - zobrazuje prvky z CanvasElements -->
+            <Canvas Background="LightGray">
+                <!-- EventTrigger pro klik myši na Canvas (zrušení výběru) -->
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                        <i:InvokeCommandAction Command="{Binding DesignCanvasMouseLeftButtonDownCommand}" 
+                                               CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=DataContext}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+
+                <!-- ItemsControl pro zobrazení prvků na Canvasu -->
+                <ItemsControl ItemsSource="{Binding CanvasElements}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Canvas>
+
+            <!-- Pravý panel s TreeView a Properties panelem -->
+            <Grid Grid.Column="1" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="89*"/>
+                    <ColumnDefinition Width="191*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <!-- Horní část pro TreeView -->
+                    <RowDefinition Height="32*" />
+                    <RowDefinition Height="228*"/>
+                    <!-- Splitter pro změnu velikosti -->
+                    <RowDefinition Height="Auto" />
+                    <!-- Spodní část pro vlastnosti vybraného objektu -->
+                    <RowDefinition Height="261*" />
+                </Grid.RowDefinitions>
+
+                <!-- Nadpis seznamu objektů -->
+                <TextBlock Text="Objekty" FontWeight="Bold" Margin="0,0,0,5" Grid.ColumnSpan="2" Grid.RowSpan="2" FontSize="14" />
+
+                <!-- TreeView zobrazující GroupedElements (Texts, Images) -->
+                <TreeView ItemsSource="{Binding GroupedElements}" 
+                          local:TreeViewHelper.SelectedItem="{Binding SelectedElementViewModel, Mode=OneWay}"
+                          Margin="0,20,0,15" Grid.ColumnSpan="2" Grid.RowSpan="3">
+
+                    <!-- Všechny uzly rozbalené -->
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="True"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+
+                    <TreeView.Resources>
+                        <!-- Šablony pro TextElementViewModel a ImageElementViewModel zobrazují jen DisplayName -->
+                        <DataTemplate DataType="{x:Type vm:TextElementViewModel}">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="{x:Type vm:ImageElementViewModel}">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </TreeView.Resources>
+
+                    <!-- Událost SelectedItemChanged převedena na Command ve ViewModelu -->
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectedItemChanged">
+                            <i:InvokeCommandAction Command="{Binding TreeViewSelectionChangedCommand}"
+                                                   CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=TreeView}}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TreeView>
+
+                <!-- GridSplitter pro změnu velikosti panelů -->
+                <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" Height="5"
+                              ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" Margin="0,5,0,5" Grid.ColumnSpan="2" />
+
+                <!-- ContentControl pro zobrazení vlastností vybraného objektu -->
+                <ContentControl Content="{Binding SelectedElementViewModel}" Grid.Row="3" Grid.ColumnSpan="2">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <!-- Pokud není vybrán žádný objekt, skryjeme panel s vlastnostmi -->
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedElementViewModel}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+
+                    <ContentControl.Resources>
+                        <!-- Detailní šablony pro TextElementViewModel -->
+                        <DataTemplate DataType="{x:Type vm:TextElementViewModel}">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Vlastnosti textu" FontWeight="Bold" Margin="0,0,0,10" />
+
+                                <!-- Řádek pro Text -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Text:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
+                                </StackPanel>
+
+                                <!-- Řádek pro Formát písma -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Formát písma:" Width="100" VerticalAlignment="Center" />
+                                    <ComboBox Width="150" 
+                                        ItemsSource="{Binding DataContext.AvailableFontFamilies, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                        SelectedItem="{Binding FontFamily, Mode=TwoWay}" />
+                                </StackPanel>
+
+                                <!-- Řádek pro Velikost písma -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Velikost písma:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
+                                </StackPanel>
+
+                                <!-- Řádek pro Barva textu -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Barva textu:" Width="100" VerticalAlignment="Center" />
+                                    <ComboBox Width="150"
+                                        ItemsSource="{Binding AvailableColors}"
+                                        SelectedItem="{Binding SelectedColor, Mode=TwoWay}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+
+                        <!-- Detailní šablony pro ImageElementViewModel -->
+                        <DataTemplate DataType="{x:Type vm:ImageElementViewModel}">
+                            <StackPanel Margin="10">
+                                <TextBlock Text="Vlastnosti obrázku" FontWeight="Bold" Margin="0,0,0,10" />
+                                <TextBlock Text="Šířka:" />
+                                <TextBox Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="Výška:" Margin="0,10,0,0" />
+                                <TextBox Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="Průhlednost:" Margin="0,10,0,0" />
+                                <TextBox Text="{Binding Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
