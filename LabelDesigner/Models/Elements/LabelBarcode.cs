@@ -1,36 +1,35 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LabelDesigner.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace LabelDesigner.Models.Elements
 {
     /// <summary>
     /// Reprezentuje čárový kód jako prvek štítku.
-    /// Obsahuje Data (hodnotu kódu) a BarcodeType (typ kódu, např. Code128).
+    /// Obsahuje vlastnosti Data a BarcodeType.
     /// </summary>
     public class LabelBarcode : LabelBase
     {
-        #region Fields
+        private string? _data;
+        private string? _barcodeType;
 
-        private string _data = string.Empty;
-        private string _barcodeType = "Code128";
-
-        #endregion
-
-        #region Properties
-
+        /// <summary>
+        /// Obsah čárového kódu (např. '1234567890128').
+        /// </summary>
         [Required]
-        public string Data
+        public string? Data
         {
             get => _data;
-            set { _data = value; OnPropertyChanged(); }
+            set => SetProperty(ref _data, value);
         }
 
+        /// <summary>
+        /// Typ čárového kódu (např. 'EAN', 'Code39').
+        /// </summary>
         [Required]
-        public string BarcodeType
+        public string? BarcodeType
         {
             get => _barcodeType;
-            set { _barcodeType = value; OnPropertyChanged(); }
+            set => SetProperty(ref _barcodeType, value);
         }
-
-        #endregion
     }
 }

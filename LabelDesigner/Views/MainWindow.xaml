@@ -4,158 +4,158 @@
         xmlns:vm="clr-namespace:LabelDesigner.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:LabelDesigner.Helpers"
-        Title="SFC Designer" Height="600" Width="800" WindowState="Maximized" Icon="/Views/logo1.png"
-        WindowStyle="None" AllowsTransparency="True" Background="#FF8D8D8D">
+        Title="SFC Designer"
+        Height="600"
+        Width="800"
+        WindowState="Maximized"
+        Icon="/Views/logo1.png"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="#FF8D8D8D">
 
-    <!-- ViewModel jako DataContext -->
+    <!-- Nastavení DataContextu na hlavní ViewModel aplikace -->
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
 
     <Window.Resources>
-        <!-- DataTemplate pro skupiny objektů (ElementGroup) -->
+        <!-- DataTemplate pro skupiny objektů (ElementGroup) v TreeView -->
         <HierarchicalDataTemplate DataType="{x:Type vm:ElementGroup}" ItemsSource="{Binding Items}">
             <TextBlock Text="{Binding Name}" FontWeight="Bold" />
         </HierarchicalDataTemplate>
     </Window.Resources>
+
+    <!-- Efekt stínu okna -->
     <Window.Effect>
         <DropShadowEffect/>
     </Window.Effect>
 
+    <!-- Klávesová zkratka: Delete pro smazání -->
+    <Window.InputBindings>
+        <KeyBinding 
+            Command="{Binding DeleteElementCommand}" 
+            Key="Delete" />
+    </Window.InputBindings>
+
+    <!-- Vlastní Chrome (bez titulkové lišty Windows) -->
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" GlassFrameThickness="0" UseAeroCaptionButtons="False" />
+        <WindowChrome CaptionHeight="0"
+                      ResizeBorderThickness="5"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
-    <!-- Hlavní Grid -->
+    <!-- Hlavní rozložení: 3 řádky -->
     <Grid>
         <Grid.RowDefinitions>
-            <!-- Horní lišta -->
             <RowDefinition Height="50" />
-            <!-- Menu -->
             <RowDefinition Height="40" />
-            <!-- Obsah aplikace -->
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Horní lišta -->
+        <!-- HORNÍ LIŠTA -->
         <Border Grid.Row="0" Background="#303030">
-            <!-- Chování (Behavior) pro volání DragMoveCommand při MouseLeftButtonDown -->
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding DragMoveCommand}" PassEventArgsToCommand="True" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
 
-            <!-- Vlastní obsah horní lišty -->
             <DockPanel VerticalAlignment="Center">
                 <!-- Ikona aplikace -->
-                <Image Source="/Views/logo1.png" 
-               Width="37" Height="37" 
-               Margin="10,0,10,0" 
-               VerticalAlignment="Center" />
+                <Image Source="/Views/logo1.png"
+                       Width="37"
+                       Height="37"
+                       Margin="10,0,10,0"
+                       VerticalAlignment="Center" />
 
                 <!-- Název aplikace -->
-                <TextBlock Text="SFC Designer" 
-                   FontSize="20" 
-                   FontWeight="Bold" 
-                   Foreground="White" 
-                   VerticalAlignment="Center" />
+                <TextBlock Text="SFC Designer"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           VerticalAlignment="Center" />
 
-                <!-- Tlačítka pro ovládání okna -->
+                <!-- Tlačítka (min, max, close) vpravo -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
                     <Button Width="40" Height="30"
-                    Background="Transparent" Foreground="White" BorderBrush="Transparent"
-                    Command="{Binding MinimizeCommand}">
+                            Background="Transparent"
+                            Foreground="White"
+                            BorderBrush="Transparent"
+                            Command="{Binding MinimizeCommand}">
                         <TextBlock Text="-" FontSize="18"
-                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                   VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
 
                     <Button Width="40" Height="30"
-                    Background="Transparent" Foreground="White" BorderBrush="Transparent"
-                    Command="{Binding MaximizeRestoreCommand}">
+                            Background="Transparent"
+                            Foreground="White"
+                            BorderBrush="Transparent"
+                            Command="{Binding MaximizeRestoreCommand}">
                         <TextBlock Text="□" FontSize="18"
-                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                   VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
 
                     <Button Width="40" Height="30"
-                    Background="Transparent" Foreground="White" BorderBrush="Transparent"
-                    Command="{Binding CloseCommand}">
+                            Background="Transparent"
+                            Foreground="White"
+                            BorderBrush="Transparent"
+                            Command="{Binding CloseCommand}">
                         <TextBlock Text="x" FontSize="18"
-                           VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                   VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
                 </StackPanel>
             </DockPanel>
         </Border>
 
-        <!-- Menu -->
-        <Border Grid.Row="1" Background="#404040" Margin="10,0,0,0">
-            <Menu DockPanel.Dock="Top" Background="#404040" Foreground="White">
+        <!-- MENU -->
+        <Border Grid.Row="1" Margin="10,0,0,0">
+            <Menu Background="#FF8D8D8D" Foreground="Black">
                 <Menu.Resources>
-                    <!-- Styl pro MenuItem -->
                     <Style TargetType="MenuItem">
                         <Setter Property="Padding" Value="10" />
                         <Setter Property="FontSize" Value="14" />
-                        <Setter Property="Foreground" Value="White" />
+                        <Setter Property="Foreground" Value="Black" />
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="BorderThickness" Value="0" />
                     </Style>
                 </Menu.Resources>
+
                 <MenuItem Header="Soubor">
                     <MenuItem Header="Nový" Command="{Binding NewDocumentCommand}" />
                     <MenuItem Header="Uložit" Command="{Binding SaveLayoutCommand}" />
                     <MenuItem Header="Otevřít" Command="{Binding LoadLayoutCommand}" />
                 </MenuItem>
+
                 <MenuItem Header="Přidat">
                     <MenuItem Header="Přidat text" Command="{Binding AddTextCommand}" />
                     <MenuItem Header="Přidat obrázek" Command="{Binding AddImageCommand}" />
+                    <MenuItem Header="Přidat barcode">
+                        <MenuItem Header="EAN" Command="{Binding AddBarcodeEanCommand}" />
+                        <MenuItem Header="Code39" Command="{Binding AddBarcodeCode39Command}" />
+                    </MenuItem>
+                    <MenuItem Header="Přidat QR kód" Command="{Binding AddQrCommand}" />
                 </MenuItem>
             </Menu>
         </Border>
 
-        <!-- Horní menu -->
-        <Grid Grid.Row="1" Background="#FF8D8D8D" Margin="10,0,0,0">
-            <Menu DockPanel.Dock="Top" Background="#FF8D8D8D">
-                <Menu.Resources>
-                    <!-- Styl pro MenuItem -->
-                    <Style TargetType="MenuItem">
-                        <Setter Property="Padding" Value="10" />
-                        <Setter Property="FontSize" Value="14" />
-                        <Setter Property="Background" Value="#FF8D8D8D" />
-                        <Setter Property="BorderThickness" Value="0" />
-                    </Style>
-                </Menu.Resources>
-                <MenuItem Header="Soubor">
-                    <MenuItem Header="Nový" Command="{Binding NewDocumentCommand}" />
-                    <MenuItem Header="Uložit" Command="{Binding SaveLayoutCommand}" />
-                    <MenuItem Header="Otevřít" Command="{Binding LoadLayoutCommand}" />
-                </MenuItem>
-                <MenuItem Header="Přidat">
-                    <MenuItem Header="Přidat text" Command="{Binding AddTextCommand}" />
-                    <MenuItem Header="Přidat obrázek" Command="{Binding AddImageCommand}" />
-                </MenuItem>
-            </Menu>
-        </Grid>
-
-
-
-        <!-- Hlavní oblast s Canvasem vlevo a TreeView + Properties panelem vpravo -->
+        <!-- HLAVNÍ OBLAST (Canvas vlevo, TreeView + Properties vpravo) -->
         <Grid Grid.Row="2" Margin="10,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
 
-            <!-- Canvas vlevo - zobrazuje prvky z CanvasElements -->
+            <!-- CANVAS vlevo -->
             <Canvas Background="LightGray">
-                <!-- EventTrigger pro klik myši na Canvas (zrušení výběru) -->
+                <!-- Kliknutí na prázdný Canvas = zrušení výběru -->
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseLeftButtonDown">
-                        <i:InvokeCommandAction Command="{Binding DesignCanvasMouseLeftButtonDownCommand}" 
+                        <i:InvokeCommandAction Command="{Binding DesignCanvasMouseLeftButtonDownCommand}"
                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Canvas}, Path=DataContext}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
 
-                <!-- ItemsControl pro zobrazení prvků na Canvasu -->
                 <ItemsControl ItemsSource="{Binding CanvasElements}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -165,31 +165,27 @@
                 </ItemsControl>
             </Canvas>
 
-            <!-- Pravý panel s TreeView a Properties panelem -->
+            <!-- PRAVÝ PANEL (TreeView a Properties) -->
             <Grid Grid.Column="1" Margin="10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="89*"/>
-                    <ColumnDefinition Width="191*"/>
+                    <ColumnDefinition Width="89*" />
+                    <ColumnDefinition Width="191*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <!-- Horní část pro TreeView -->
                     <RowDefinition Height="32*" />
-                    <RowDefinition Height="228*"/>
-                    <!-- Splitter pro změnu velikosti -->
+                    <RowDefinition Height="228*" />
                     <RowDefinition Height="Auto" />
-                    <!-- Spodní část pro vlastnosti vybraného objektu -->
                     <RowDefinition Height="261*" />
                 </Grid.RowDefinitions>
 
-                <!-- Nadpis seznamu objektů -->
-                <TextBlock Text="Objekty" FontWeight="Bold" Margin="0,0,0,5" Grid.ColumnSpan="2" Grid.RowSpan="2" FontSize="14" />
+                <!-- Nadpis "Objekty" -->
+                <TextBlock Text="Objekty" FontWeight="Bold" Margin="0,0,0,5"
+                           Grid.ColumnSpan="2" Grid.RowSpan="2" FontSize="14" />
 
-                <!-- TreeView zobrazující GroupedElements (Texts, Images) -->
-                <TreeView ItemsSource="{Binding GroupedElements}" 
+                <!-- TREEVIEW -->
+                <TreeView ItemsSource="{Binding GroupedElements}"
                           local:TreeViewHelper.SelectedItem="{Binding SelectedElementViewModel, Mode=OneWay}"
                           Margin="0,20,0,15" Grid.ColumnSpan="2" Grid.RowSpan="3">
-
-                    <!-- Všechny uzly rozbalené -->
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="TreeViewItem">
                             <Setter Property="IsExpanded" Value="True"/>
@@ -197,17 +193,34 @@
                     </TreeView.ItemContainerStyle>
 
                     <TreeView.Resources>
-                        <!-- Šablony pro TextElementViewModel a ImageElementViewModel zobrazují jen DisplayName -->
+                        <!-- TextElementViewModel -->
                         <DataTemplate DataType="{x:Type vm:TextElementViewModel}">
                             <TextBlock Text="{Binding DisplayName}" />
                         </DataTemplate>
 
+                        <!-- ImageElementViewModel -->
                         <DataTemplate DataType="{x:Type vm:ImageElementViewModel}">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+
+                        <!-- BarcodeElementViewModel -->
+                        <DataTemplate DataType="{x:Type vm:BarcodeElementViewModel}">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+
+                        <!-- QrCodeElementViewModel -->
+                        <DataTemplate DataType="{x:Type vm:QrCodeElementViewModel}">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+
+                        <!-- LayoutViewModel -->
+                        <DataTemplate DataType="{x:Type vm:LayoutViewModel}">
                             <TextBlock Text="{Binding DisplayName}" />
                         </DataTemplate>
                     </TreeView.Resources>
 
-                    <!-- Událost SelectedItemChanged převedena na Command ve ViewModelu -->
+
+                    <!-- Synchronizace výběru -->
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectedItemChanged">
                             <i:InvokeCommandAction Command="{Binding TreeViewSelectionChangedCommand}"
@@ -216,15 +229,16 @@
                     </i:Interaction.Triggers>
                 </TreeView>
 
-                <!-- GridSplitter pro změnu velikosti panelů -->
+                <!-- Splitter mezi TreeView a Properties -->
                 <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" Height="5"
-                              ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" Margin="0,5,0,5" Grid.ColumnSpan="2" />
+                              ResizeDirection="Rows" ResizeBehavior="PreviousAndNext"
+                              Margin="0,5,0,5" Grid.ColumnSpan="2" />
 
-                <!-- ContentControl pro zobrazení vlastností vybraného objektu -->
-                <ContentControl Content="{Binding SelectedElementViewModel}" Grid.Row="3" Grid.ColumnSpan="2">
+                <!-- PANEL VLASTNOSTÍ (ContentControl) -->
+                <ContentControl Content="{Binding SelectedElementViewModel}"
+                                Grid.Row="3" Grid.ColumnSpan="2">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
-                            <!-- Pokud není vybrán žádný objekt, skryjeme panel s vlastnostmi -->
                             <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding SelectedElementViewModel}" Value="{x:Null}">
@@ -234,54 +248,436 @@
                         </Style>
                     </ContentControl.Style>
 
+                    <!-- Šablony pro detaily Vlastností -->
                     <ContentControl.Resources>
-                        <!-- Detailní šablony pro TextElementViewModel -->
+
+                        <!-- LayoutViewModel -->
+                        <DataTemplate DataType="{x:Type vm:LayoutViewModel}">
+                            <StackPanel Margin="10">
+                                <!-- Nadpis a tlačítko smazání -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Vlastnosti Layoutu" 
+                                               FontWeight="Bold" 
+                                               VerticalAlignment="Center" 
+                                               Grid.Column="0" />
+                                    <Button Command="{Binding DataContext.DeleteElementCommand, 
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Grid.Column="1" 
+                                            Background="LightPink" 
+                                            BorderBrush="Transparent"
+                                            Cursor="Hand" 
+                                            ToolTip="Smazat">
+                                        <Image Source="/Views/bin.png" Width="16" Height="16" />
+                                    </Button>
+                                </Grid>
+
+                                <!-- Výběr štítku -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Druh štítku:" Width="100" VerticalAlignment="Center" />
+                                    <ComboBox ItemsSource="{Binding AvailableLayouts}"
+                                              SelectedItem="{Binding SelectedLayout, Mode=TwoWay}"
+                                              DisplayMemberPath="Key"
+                                              Width="150" />
+                                </StackPanel>
+
+                                <!-- Šířka -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Šířka:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Výška -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Výška:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Vrstva (Layer) -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Vrstva:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Layer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Zaoblení rohů -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Zaoblení rohů:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding CornerRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="60" />
+                                </StackPanel>
+                            </StackPanel>
+
+                        </DataTemplate>
+
+                        <!-- TEXT: TextElementViewModel -->
                         <DataTemplate DataType="{x:Type vm:TextElementViewModel}">
                             <StackPanel Margin="10">
-                                <TextBlock Text="Vlastnosti textu" FontWeight="Bold" Margin="0,0,0,10" />
+                                <!-- Řádek s nadpisem a košem -->
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                                <!-- Řádek pro Text -->
+                                    <TextBlock Text="Vlastnosti textu"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="0" />
+
+                                    <Button Command="{Binding DataContext.DeleteElementCommand,
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Grid.Column="1"
+                                            Background="LightPink"
+                                            BorderBrush="Transparent"
+                                            Cursor="Hand"
+                                            ToolTip="Smazat">
+                                        <Image Source="/Views/bin.png" Width="16" Height="16" />
+                                    </Button>
+                                </Grid>
+
+                                <!-- ID -->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="ID:" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding ID}" />
+                                </StackPanel>
+
+                                <!-- TextContent -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <TextBlock Text="Text:" Width="100" VerticalAlignment="Center" />
                                     <TextBox Text="{Binding TextContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
                                 </StackPanel>
 
-                                <!-- Řádek pro Formát písma -->
+                                <!-- FontFamily -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <TextBlock Text="Formát písma:" Width="100" VerticalAlignment="Center" />
-                                    <ComboBox Width="150" 
-                                        ItemsSource="{Binding DataContext.AvailableFontFamilies, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                        SelectedItem="{Binding FontFamily, Mode=TwoWay}" />
+                                    <ComboBox Width="150"
+                                              ItemsSource="{Binding DataContext.AvailableFontFamilies, RelativeSource={RelativeSource AncestorType=Window}}"
+                                              SelectedItem="{Binding FontFamily, Mode=TwoWay}" />
                                 </StackPanel>
 
-                                <!-- Řádek pro Velikost písma -->
+                                <!-- FontSize -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <TextBlock Text="Velikost písma:" Width="100" VerticalAlignment="Center" />
                                     <TextBox Text="{Binding FontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
                                 </StackPanel>
 
-                                <!-- Řádek pro Barva textu -->
+                                <!-- SelectedColor -->
                                 <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                     <TextBlock Text="Barva textu:" Width="100" VerticalAlignment="Center" />
                                     <ComboBox Width="150"
-                                        ItemsSource="{Binding AvailableColors}"
-                                        SelectedItem="{Binding SelectedColor, Mode=TwoWay}" />
+                                              ItemsSource="{Binding AvailableColors}"
+                                              SelectedItem="{Binding SelectedColor, Mode=TwoWay}" />
+                                </StackPanel>
+
+                                <!-- Vrstva (Layer) -->
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="Vrstva (Layer):" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Layer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- X pozice -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="X pozice:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding LocationX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Y pozice -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Y pozice:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding LocationY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Šířka -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Šířka:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Výška -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Výška:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>
 
-                        <!-- Detailní šablony pro ImageElementViewModel -->
+                        <!-- IMAGE: ImageElementViewModel -->
                         <DataTemplate DataType="{x:Type vm:ImageElementViewModel}">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <!-- Nadpis a tlačítko smazání -->
+                                    <RowDefinition Height="*" />
+                                    <!-- Detailní vlastnosti -->
+                                </Grid.RowDefinitions>
+
+                                <!-- Hlavní nadpis a tlačítko smazání -->
+                                <Grid Grid.Row="0" Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Vlastnosti obrázku" 
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center" 
+                                               Grid.Column="0" />
+                                    <Button Command="{Binding DataContext.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Grid.Column="1" 
+                                            Background="LightPink" 
+                                            BorderBrush="Transparent"
+                                            Cursor="Hand" 
+                                            ToolTip="Smazat">
+                                        <Image Source="/Views/bin.png" 
+                                               Width="16" 
+                                               Height="16" />
+                                    </Button>
+                                </Grid>
+
+                                <!-- Detailní vlastnosti -->
+                                <Grid Grid.Row="1">
+                                    <!-- Definice řádků -->
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 0: ID -->
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 1: Název -->
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 2: Vrstva -->
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 3: X pozice -->
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 4: Y pozice -->
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 5: Šířka -->
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 6: Výška -->
+                                        <RowDefinition Height="Auto" />
+                                        <!-- 7: Průhlednost -->
+                                    </Grid.RowDefinitions>
+                                    <!-- Tři sloupce: popisky, 1. polovina, 2. polovina -->
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- ID -->
+                                    <TextBlock Text="ID:" 
+                                               Grid.Row="0" Grid.Column="0" 
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding ID}" 
+                                               Grid.Row="0" Grid.Column="1" 
+                                               VerticalAlignment="Center" />
+
+                                    <!-- Název (Title) -->
+                                    <TextBlock Text="Název (Title):" 
+                                               Grid.Row="1" Grid.Column="0" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,5,0,0" />
+                                    <TextBox Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Margin="0,5,0,0" 
+                                             Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" />
+
+                                    <!-- Vrstva (Layer) -->
+                                    <TextBlock Text="Vrstva (Layer):" 
+                                               Grid.Row="2" Grid.Column="0" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,10,0,0" />
+                                    <TextBox Text="{Binding Layer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Row="2" Grid.Column="1" Margin="0,10,0,0" />
+
+                                    <!-- X pozice -->
+                                    <TextBlock Text="X pozice:" 
+                                               Grid.Row="3" Grid.Column="0" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,5,0,0" />
+                                    <TextBox Text="{Binding LocationX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Row="3" Grid.Column="1" Margin="0,10,0,0" />
+
+                                    <!-- Y pozice -->
+                                    <TextBlock Text="Y pozice:" 
+                                               Grid.Row="4" Grid.Column="0" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,5,0,0" />
+                                    <TextBox Text="{Binding LocationY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Row="4" Grid.Column="1" Margin="0,10,0,0" />
+
+                                    <!-- Šířka -->
+                                    <TextBlock Text="Šířka:" 
+                                               Grid.Row="5" Grid.Column="0" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,5,0,0" />
+                                    <TextBox Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Row="5" Grid.Column="1" Margin="0,10,0,0" />
+
+                                    <!-- Výška -->
+                                    <TextBlock Text="Výška:" 
+                                               Grid.Row="6" Grid.Column="0" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,5,0,0" />
+                                    <TextBox Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Row="6" Grid.Column="1" Margin="0,10,0,0" />
+
+                                    <!-- Průhlednost -->
+                                    <TextBlock Text="Průhlednost:" 
+                                               Grid.Row="7" Grid.Column="0" 
+                                               VerticalAlignment="Center" 
+                                               Margin="0,10,0,0" />
+                                    <TextBox Text="{Binding Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Grid.Row="7" Grid.Column="1" Margin="0,10,0,0" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+
+                        <!-- BARCODE: BarcodeElementViewModel -->
+                        <DataTemplate DataType="{x:Type vm:BarcodeElementViewModel}">
                             <StackPanel Margin="10">
-                                <TextBlock Text="Vlastnosti obrázku" FontWeight="Bold" Margin="0,0,0,10" />
-                                <TextBlock Text="Šířka:" />
-                                <TextBox Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock Text="Výška:" Margin="0,10,0,0" />
-                                <TextBox Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <TextBlock Text="Průhlednost:" Margin="0,10,0,0" />
-                                <TextBox Text="{Binding Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Vlastnosti Barcode"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="0" />
+                                    <Button Command="{Binding DataContext.DeleteElementCommand,
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Grid.Column="1"
+                                            Background="LightPink"
+                                            BorderBrush="Transparent"
+                                            Cursor="Hand"
+                                            ToolTip="Smazat">
+                                        <Image Source="/Views/bin.png" Width="16" Height="16" />
+                                    </Button>
+                                </Grid>
+
+                                <!-- ID -->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="ID:" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding ID}" />
+                                </StackPanel>
+
+                                <!-- Barcode data -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Data:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Data, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
+                                </StackPanel>
+
+                                <!-- Vrstva (Layer) -->
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="Vrstva (Layer):" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Layer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- X pozice -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="X pozice:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding LocationX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Y pozice -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Y pozice:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding LocationY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Šířka -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Šířka:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Výška -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Výška:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
                             </StackPanel>
                         </DataTemplate>
+
+                        <!-- QR: QrCodeElementViewModel -->
+                        <DataTemplate DataType="{x:Type vm:QrCodeElementViewModel}">
+                            <StackPanel Margin="10">
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="Vlastnosti QR kódu"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Grid.Column="0" />
+                                    <Button Command="{Binding DataContext.DeleteElementCommand,
+                                                      RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Grid.Column="1"
+                                            Background="LightPink"
+                                            BorderBrush="Transparent"
+                                            Cursor="Hand"
+                                            ToolTip="Smazat">
+                                        <Image Source="/Views/bin.png" Width="16" Height="16" />
+                                    </Button>
+                                </Grid>
+
+                                <!-- Data QR -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Data:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Data, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" />
+                                </StackPanel>
+
+                                <!-- Vrstva (Layer) -->
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <TextBlock Text="Vrstva (Layer):" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Layer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- X pozice -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="X pozice:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding LocationX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Y pozice -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Y pozice:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding LocationY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Šířka -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Šířka:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Width, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+
+                                <!-- Výška -->
+                                <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                                    <TextBlock Text="Výška:" Width="100" VerticalAlignment="Center" />
+                                    <TextBox Text="{Binding Height, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="60" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+
                     </ContentControl.Resources>
                 </ContentControl>
             </Grid>

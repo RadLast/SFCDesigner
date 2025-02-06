@@ -10,9 +10,11 @@ namespace LabelDesigner.Models.Elements
     /// Abstraktní třída pro základní vlastnosti prvků (Text, Image, Barcode).
     /// Obsahuje ID, vrstvy (Layer), pozici (X,Y), velikost (Width,Height).
     /// </summary>
+    [XmlInclude(typeof(LabelLayout))]
     [XmlInclude(typeof(LabelText))]
     [XmlInclude(typeof(LabelBarcode))]
     [XmlInclude(typeof(LabelImage))]
+    [XmlInclude(typeof(LabelQrCode))]
     public abstract class LabelBase : INotifyPropertyChanged
     {
         #region Fields
@@ -40,13 +42,13 @@ namespace LabelDesigner.Models.Elements
             set { _layer = value; OnPropertyChanged(); }
         }
 
-        public double LocationX
+        public virtual double LocationX
         {
             get => _locationX;
             set { _locationX = value; OnPropertyChanged(); }
         }
 
-        public double LocationY
+        public virtual double LocationY
         {
             get => _locationY;
             set { _locationY = value; OnPropertyChanged(); }
@@ -73,6 +75,14 @@ namespace LabelDesigner.Models.Elements
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
         }
 
         #endregion

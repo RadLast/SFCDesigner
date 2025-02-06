@@ -55,7 +55,7 @@ namespace LabelDesigner.Services
             }
 
             Debug.WriteLine("Creating new SelectionAdorner.");
-            selectionAdorner = new SelectionAdorner(element);
+            selectionAdorner = new SelectionResizeAdorner(element);
             var adornerLayer = AdornerLayer.GetAdornerLayer(element);
 
             if (adornerLayer != null)

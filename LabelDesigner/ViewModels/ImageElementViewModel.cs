@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using LabelDesigner.Models.Elements;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -6,47 +7,98 @@ namespace LabelDesigner.ViewModels
 {
     /// <summary>
     /// ViewModel pro obrázkový prvek na plátně.
-    /// Poskytuje vlastnosti pro Width, Height, Opacity, a DisplayName.
+    /// Používá kompozici: Model (LabelImage) + WPF Image.
     /// </summary>
     public class ImageElementViewModel : ObservableObject, IElementViewModel
     {
-        #region Fields
-
         private readonly Image _image;
-
-        #endregion
-
-        #region Constructor
+        private readonly LabelImage _imageModel;
 
         /// <summary>
-        /// Inicializuje nový ImageElementViewModel s daným Image UIElementem.
+        /// Konstruktor vyžaduje WPF Image a model LabelImage.
         /// </summary>
-        /// <param name="image">UIElement obrázku na plátně.</param>
-        public ImageElementViewModel(Image image)
+        public ImageElementViewModel(Image image, LabelImage imageModel)
         {
             _image = image;
+            _imageModel = imageModel;
+
             UnderlyingElement = image;
+
+            // Kdykoli se fyzicky změní rozměr _image, upozorníme na změnu
+            _image.SizeChanged += (s, e) =>
+            {
+                OnPropertyChanged(nameof(Width));
+                OnPropertyChanged(nameof(Height));
+            };
         }
 
-        #endregion
-
-        #region IElementViewModel Properties
-
-        /// <inheritdoc/>
+        /// <summary>
+        /// UIElement, který reprezentuje obrázek na plátně (WPF Image).
+        /// </summary>
         public UIElement UnderlyingElement { get; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Určuje, zda je panel viditelný (u obrázku ho chceme zobrazit).
+        /// </summary>
         public Visibility PanelVisibility => Visibility.Visible;
 
-        /// <inheritdoc/>
-        public string DisplayName => "Image";
+        /// <summary>
+        /// Zobrazené jméno v bočním panelu, obsahuje ID i Title.
+        /// </summary>
+        public string DisplayName => $"[{_imageModel.ID}] Image: {_imageModel.Title}";
 
-        #endregion
-
-        #region Properties
+        public int ID => _imageModel.ID; // jestli chcete upravit ID, dejte set a ID generujte
 
         /// <summary>
-        /// Šířka obrázku v UI.
+        /// Číslo vrstvy (ZIndex). Uložíme do modelu i do Canvas.
+        /// </summary>
+        public int Layer
+        {
+            get => _imageModel.Layer;
+            set
+            {
+                if (_imageModel.Layer != value)
+                {
+                    _imageModel.Layer = value;
+                    Canvas.SetZIndex(_image, value); // Změna v UI
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Pozice X (Canvas.Left) + uložení do modelu.
+        /// </summary>
+        public double LocationX
+        {
+            get => Canvas.GetLeft(_image);
+            set
+            {
+                if (Canvas.GetLeft(_image) != value)
+                {
+                    Canvas.SetLeft(_image, value);
+                    _imageModel.LocationX = value; // do modelu
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public double LocationY
+        {
+            get => Canvas.GetTop(_image);
+            set
+            {
+                if (Canvas.GetTop(_image) != value)
+                {
+                    Canvas.SetTop(_image, value);
+                    _imageModel.LocationY = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Šířka obrázku v UI. 
+        /// Při nastavení se aktualizuje i v modelu.
         /// </summary>
         public double Width
         {
@@ -56,6 +108,7 @@ namespace LabelDesigner.ViewModels
                 if (_image.Width != value)
                 {
                     _image.Width = value;
+                    _imageModel.Width = value;
                     OnPropertyChanged();
                 }
             }
@@ -63,6 +116,7 @@ namespace LabelDesigner.ViewModels
 
         /// <summary>
         /// Výška obrázku v UI.
+        /// Při nastavení se aktualizuje i v modelu.
         /// </summary>
         public double Height
         {
@@ -72,13 +126,15 @@ namespace LabelDesigner.ViewModels
                 if (_image.Height != value)
                 {
                     _image.Height = value;
+                    _imageModel.Height = value;
                     OnPropertyChanged();
                 }
             }
         }
 
         /// <summary>
-        /// Průhlednost obrázku (0-1).
+        /// Průhlednost obrázku (0-1). 
+        /// Synchronizováno s WPF Image i s modelem.
         /// </summary>
         public double Opacity
         {
@@ -88,11 +144,28 @@ namespace LabelDesigner.ViewModels
                 if (_image.Opacity != value)
                 {
                     _image.Opacity = value;
+                    _imageModel.Opacity = value;
                     OnPropertyChanged();
                 }
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Uživatelský (editovatelný) název obrázku, uložený v modelu.
+        /// </summary>
+        public string Title
+        {
+            get => _imageModel.Title;
+            set
+            {
+                if (_imageModel.Title != value)
+                {
+                    _imageModel.Title = value;
+                    OnPropertyChanged();
+                    // Aktualizace DisplayName:
+                    OnPropertyChanged(nameof(DisplayName));
+                }
+            }
+        }
     }
 }

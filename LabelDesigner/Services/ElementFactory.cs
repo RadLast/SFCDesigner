@@ -5,6 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ZXing;
+using ZXing.Common;
+using ZXing.Windows.Compatibility;
 
 namespace LabelDesigner.Services
 {
@@ -104,15 +107,75 @@ namespace LabelDesigner.Services
         /// Vytvoří prvek pro LabelBarcode. Lze rozšířit pomocí externích knihoven.
         /// Zde jen TextBlock.
         /// </summary>
-        public UIElement CreateBarcode(LabelBarcode barcodeElement)
+        public UIElement CreateBarcode(LabelBarcode model)
         {
-            return new TextBlock
+            var image = new Image
             {
-                Text = barcodeElement.Data,
-                FontSize = 16,
-                Foreground = Brushes.Black
+                Width = 150,
+                Height = 50
             };
+
+            try
+            {
+                // Rozhodneme se podle model.BarcodeType
+                var barcodeFormat = BarcodeFormat.EAN_13;
+                if (model.BarcodeType == "Code39")
+                    barcodeFormat = BarcodeFormat.CODE_39;
+
+                var writer = new BarcodeWriter<System.Drawing.Bitmap>()
+                {
+                    Format = barcodeFormat,
+                    Options = new EncodingOptions
+                    {
+                        Width = (int)image.Width,
+                        Height = (int)image.Height,
+                        Margin = 0
+                    },
+                    Renderer = new BitmapRenderer() // z ZXing.Windows.Compatibility
+                };
+
+                var bmp = writer.Write(model.Data);
+                image.Source = ConvertToBitmapImage(bmp);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Chyba při generování barcode: " + ex.Message);
+            }
+
+            return image;
         }
+
+        public UIElement CreateQrCode(LabelQrCode model)
+        {
+            var image = new Image
+            {
+                Width = 150,
+                Height = 150
+            };
+
+            // Nyní definujte writer s typem <System.Drawing.Bitmap>
+            var writer = new BarcodeWriter<System.Drawing.Bitmap>()
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new EncodingOptions
+                {
+                    Width = (int)image.Width,
+                    Height = (int)image.Height,
+                    Margin = 0
+                },
+                // DŮLEŽITÉ: Nastavte Renderer!
+                Renderer = new BitmapRenderer()
+            };
+
+            // Teď už Write nebude házet výjimku
+            var bmp = writer.Write(model.Data);
+
+            image.Source = ConvertToBitmapImage(bmp);
+            return image;
+        }
+
+
+
 
         #endregion
 
@@ -149,6 +212,19 @@ namespace LabelDesigner.Services
             return color; // Vrací původní hodnotu, pokud není ve formátu #AARRGGBB
         }
 
+        private BitmapImage ConvertToBitmapImage(System.Drawing.Bitmap bitmap)
+        {
+            using var memoryStream = new MemoryStream();
+            bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+            memoryStream.Position = 0;
+
+            var wpfBitmap = new BitmapImage();
+            wpfBitmap.BeginInit();
+            wpfBitmap.CacheOption = BitmapCacheOption.OnLoad;
+            wpfBitmap.StreamSource = memoryStream;
+            wpfBitmap.EndInit();
+            return wpfBitmap;
+        }
 
         #endregion
     }

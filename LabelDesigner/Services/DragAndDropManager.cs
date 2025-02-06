@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using LabelDesigner.ViewModels;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,12 +15,12 @@ namespace LabelDesigner.Services
         private bool _isDragging = false;
 
         private readonly SelectionManager _selectionManager;
-        private readonly ResizeManager _resizeManager;
+        private readonly MainViewModel _mainViewModel;
 
-        public DragAndDropManager(SelectionManager selectionManager, ResizeManager resizeManager)
+        public DragAndDropManager(SelectionManager selectionManager, MainViewModel mainViewModel)
         {
             _selectionManager = selectionManager;
-            _resizeManager = resizeManager;
+            _mainViewModel = mainViewModel;
         }
 
         /// <summary>
@@ -73,41 +74,50 @@ namespace LabelDesigner.Services
         /// </summary>
         private void Drag(object sender, MouseEventArgs e)
         {
-            // Pokud už si událost převzal ResizeManager, tak nerespondujeme
             if (e.Handled) return;
-
             if (_isDragging && _selectedElement != null)
             {
                 var canvas = GetParentCanvas(_selectedElement);
                 if (canvas == null) return;
 
                 var currentPoint = e.GetPosition(canvas);
-
-                // Spočítat posun od původního bodu
                 double offsetX = currentPoint.X - _startPoint.X;
                 double offsetY = currentPoint.Y - _startPoint.Y;
 
-                // Aplikovat posun k aktuálním souřadnicím Left / Top
                 double newLeft = Canvas.GetLeft(_selectedElement) + offsetX;
                 double newTop = Canvas.GetTop(_selectedElement) + offsetY;
 
-                Canvas.SetLeft(_selectedElement, newLeft);
-                Canvas.SetTop(_selectedElement, newTop);
+                // 1) Najdeme ViewModel příslušný k taženému UIElementu
+                var vm = _mainViewModel.GetViewModel(_selectedElement);
 
-                // Aktualizovat SelectionAdorner (modrý rámeček)
-                _selectionManager.UpdateSelectionBorder(newLeft, newTop);
-
-                // Pokud přesouváme prvek, který je opravdu vybraný, 
-                // aktualizovat i polohu úchopů pro resize
-                if (_selectionManager.GetSelectedObject() == _selectedElement)
+                if (vm is ImageElementViewModel imageVm)
                 {
-                    _resizeManager.UpdateHandlesPosition();
+                    imageVm.LocationX = newLeft;
+                    imageVm.LocationY = newTop;
+                }
+                else if (vm is BarcodeElementViewModel barcodeVm)
+                {
+                    barcodeVm.LocationX = newLeft;
+                    barcodeVm.LocationY = newTop;
+                }
+                else if (vm is QrCodeElementViewModel qrVm)
+                {
+                    qrVm.LocationX = newLeft;
+                    qrVm.LocationY = newTop;
+                }
+                else if (vm is TextElementViewModel textVm)
+                {
+                    textVm.LocationX = newLeft;
+                    textVm.LocationY = newTop;
                 }
 
-                // Posun "startPoint" pro příští událost
+                // 3) Aktualizace rámečku výběru
+                _selectionManager.UpdateSelectionBorder(newLeft, newTop);
+
                 _startPoint = currentPoint;
             }
         }
+
 
         /// <summary>
         /// Ukončení drag při uvolnění levého tlačítka myši.

@@ -1,34 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LabelDesigner.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace LabelDesigner.Models.Elements
 {
     /// <summary>
     /// Reprezentuje obrázkový prvek na štítku.
-    /// Obsahuje ImagePath nebo Base64Data pro obrázek a Opacity.
+    /// Obsahuje Base64Data, ImagePath, Opacity a nově Title.
     /// </summary>
     public class LabelImage : LabelBase
     {
-        #region Fields
-
         private string? _base64Data;
         private string _imagePath = string.Empty;
         private double _opacity = 1.0;
-
-        #endregion
-
-        #region Properties
-
-        public string? Base64Data
-        {
-            get => _base64Data;
-            set { _base64Data = value; OnPropertyChanged(); }
-        }
+        private string _title = string.Empty; // nová vlastnost
 
         [Required]
         public string ImagePath
         {
             get => _imagePath;
             set { _imagePath = value; OnPropertyChanged(); }
+        }
+
+        public string? Base64Data
+        {
+            get => _base64Data;
+            set { _base64Data = value; OnPropertyChanged(); }
         }
 
         [Range(0.0, 1.0)]
@@ -38,6 +34,17 @@ namespace LabelDesigner.Models.Elements
             set { _opacity = value; OnPropertyChanged(); }
         }
 
-        #endregion
+        /// <summary>
+        /// Uživatelský (editovatelný) název obrázku (např. "Logo firmy").
+        /// </summary>
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                _title = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

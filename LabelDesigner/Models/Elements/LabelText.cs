@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using LabelDesigner.Services;
 
 namespace LabelDesigner.Models.Elements
 {
@@ -27,33 +28,53 @@ namespace LabelDesigner.Models.Elements
         public string? Text
         {
             get => _text;
-            set { _text = value; OnPropertyChanged(); }
+            set
+            {
+                _text = value;
+                OnPropertyChanged();
+            }
         }
 
         [Required]
         public string FontFamily
         {
             get => _fontFamily;
-            set { _fontFamily = value; OnPropertyChanged(); }
+            set
+            {
+                _fontFamily = value;
+                OnPropertyChanged();
+            }
         }
 
         [Range(1, 1000)]
         public double FontSize
         {
             get => _fontSize;
-            set { _fontSize = value; OnPropertyChanged(); }
+            set
+            {
+                _fontSize = value;
+                OnPropertyChanged();
+            }
         }
 
         public FontWeight FontWeight
         {
             get => _fontWeight;
-            set { _fontWeight = value; OnPropertyChanged(); }
+            set
+            {
+                _fontWeight = value;
+                OnPropertyChanged();
+            }
         }
 
         public string FontColor
         {
             get => _fontColor;
-            set { _fontColor = value; OnPropertyChanged(); }
+            set
+            {
+                _fontColor = value;
+                OnPropertyChanged();
+            }
         }
 
         #endregion
