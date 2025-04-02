@@ -1,15 +1,17 @@
 # SFC Designer
 
-## Popis projektu
-SFC Designer je nástroj pro návrh a vizualizaci sekvenčních funkčních schémat. Umožňuje snadno vytvářet, editovat a exportovat diagramy pro řízení procesů.
+Aplikace pro návrh a tisk štítků.  
+Podporuje tvorbu vlastních layoutů štítků.
 
-## Funkce
-- **Vizuální editor** pro vytváření diagramů
-- **Import/export** do běžných formátů
-- **Podpora různých typů bloků** (akce, podmínky, přechody)
-- **Uložení a načítání projektů**
-- **Integrace s dalšími nástroji**
+## 🚀 Funkce
 
-## Požadavky
-- **OS:** Windows/Linux
-- **Závislosti:** .NET Core / .NET Framework
+- Návrh štítků pomocí WPF
+- Možnost výběru z přednastavených velikostí nebo zadání vlastní
+- Přidávání textu, čárových kódů, obrázků a QR kódu
+- Podpora drag & drop pro přesné umístění prvků
+
+## 🖥️ Technologie
+
+- C#
+- WPF (.NET Framework / .NET Core)
+- Visual Studio 2022
